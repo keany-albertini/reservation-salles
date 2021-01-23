@@ -26,16 +26,13 @@
 			<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
 				 <?php 
 					if(isset($_SESSION['login']))
-						echo "<a itemprop=\"item\" href=\"reservation.php\"><span itemprop=\"name\">Réservation</span></a><meta itemprop=\"position\" content=\"3\" /></li>";
+						
+						echo "<a itemprop=\"item\" href=\"reservation-form.php\"><span itemprop=\"name\">réservation</span></a><meta itemprop=\"position\" content=\"3\" /></li>";
 				?>
-            <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
-				 <?php 
-					if(!isset($_SESSION['login']))
-						echo "<a itemprop=\"item\" href=\"reservation-form.php\"><span itemprop=\"name\">Réservation</span></a><meta itemprop=\"position\" content=\"3\" /></li>";
-            	?>
+            
 			
 			
-			</li>
+			
 		</ol>
 	</nav>
 </header>

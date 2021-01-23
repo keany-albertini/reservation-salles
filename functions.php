@@ -1,34 +1,34 @@
 <?php
-    function print_r_pre($array, $name) {
-        echo '<pre>' . $name . ':<br />', "\n";
-        print_r($array);
-        echo '</pre>', "\n";
-    }
-    function var_dump_pre($array, $name) {
-        echo '<pre>' . $name . ':<br />', "\n";
-        var_dump($array);
-        echo '</pre>', "\n";
-    }
+
+function checkHoraire($jour,$heure){
+    $connexion = new PDO('mysql:host=localhost;dbname=reservationsalles',"root","");
+    $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION) ; 
+
+    $requete = $connexion->prepare('SELECT login,titre,description,debut,fin,id_utilisateur
+                                        FROM utilisateurs 
+                                            INNER JOIN reservations
+                                                ON utilisateurs.id = reservations.id_utilisateur
+                                                    WHERE DATE_FORMAT(debut, "%w") = :jour AND DATE_FORMAT(debut, "%k") = :heure ' 
+    );
+
+    $requete->bindParam(':jour', $jour) ;
+    $requete->bindParam(':heure', $heure) ;
+
+    $requete->execute();
+
+    $result = $requete->fetch();
     
-    function randomRgb() {
-        $r = rand(0, 255);
-        $g = rand(0, 255);
-        $b = rand(0, 255);
-        // echo $r . ' ' . $g . ' ' . $b;
-        $return = 'rgb(' . $r . ', ' . $g . ', ' . $b . ')';
-        return $return;
+    if($result)
+    {
+        $_GET['id'] = @$result['id_utilisateur'] ;
+        echo '<td class="reserv"><a href="reservation.php?id='.$_GET['id'].'">'.$result['login'].','.$result['description'].'</a></td>' ;
+        
     }
-    function br($input) {
-        $output = '';
-        for ($i = 0; $i < $input; ++$i) {
-            $output .= '<br />';
-        }
-        return $output;
+    else{
+        echo '<td> crénaux disponible </td>' ;
     }
-    function breakingLine() {
-        $output = '';
-        $output .= '<br>';
-        $output .= '===================================================';
-        $output .= '<br>';
-        return $output;
-    }
+}
+
+
+
+?>

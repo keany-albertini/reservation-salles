@@ -4,167 +4,171 @@
         Ce formulaire contient les informations suivantes : 
             titre, description, date de début, date de fin.
     */
-    session_start();
     
-    // DEBUG
-    $one = '<br />';
-    $two = $one . $one;
+    session_start();
 
-    require_once('pdo.php');
     require_once('functions.php');
+    require_once('pdo.php');
+     $title = 'réserver';
+    
 
-    $title = 'formulaire de réservation';
-
-    // DEBUG
-    print_r_pre($_SESSION, '18: $_SESSION:');
-    echo breakingLine();
-    print_r_pre($_POST, '20: $_POST:');
-    echo breakingLine();
-
-
-    if ( isset($_POST['cancel']) ) 
+    if(isset($_POST['valider']))
     {
-        header('Location: deconnexion.php');
-        return;
-    }
-    if ( isset($_POST['submit'])) 
-    {
-        // pas de titre
-        if (empty($_POST['title'])) 
-        {
-            $_SESSION['error'] = 'Vous devez entrer un titre pour votre réservation.';
-            header('Location: reservation-form.php');
-            return;
-        }
-        // pas de date
-        elseif (empty($_POST['date'])) 
-        {
-            $_SESSION['error'] = 'Vous devez choisir un jour pour votre réservation.';
-            header('Location: reservation-form.php');
-            return;
-        }
-        // pas d'heure du début
-        elseif (empty($_POST['startTime'])) 
-        {
-            $_SESSION['error'] = 'Vous devez choisir une heure de début pour votre réservation.';
-            header('Location: reservation-form.php');
-            return;
-        }
-        // pas heure de fin
-        elseif (empty($_POST['endTime'])) 
-        {
-            $_SESSION['error'] = 'Vous devez choisir une heure de fin pour votre réservation.';
-            header('Location: reservation-form.php');
-            return;
-        }
-        // âs de description
-        elseif (empty($_POST['description'])) 
-        {
-            $_SESSION['error'] = 'Vous devez écrire une description pour votre réservation.';
-            header('Location: reservation-form.php');
-            return;
-        }
-        // OK, CONTINUE
-        else 
-        {
-            $dateArray = explode('-', $_POST['date']);
-            $dateFormatted =implode('/',$dateArray);
-            $startTimeArray = explode(':', $_POST['startTime']);
-            $endTimeArray = explode(':', $_POST['endTime']);
-            $timestamp = strtotime($_POST['date']);
-            $dayOfWeek = date('N', $timestamp);
+        $titre = $_POST['titre'] ;
+        $description = $_POST['description'] ;
+        $date_debut = $_POST['date_debut'];
+        $date_fin = $_POST['date_fin'] ;
+        $id_utilisateur = $_SESSION['id']; 
 
-            // si c'est le week-end
-            if ($dayOfWeek == 6 || $dayOfWeek == 7) 
-            {
-                $_SESSION['error'] = 'Vous ne pouvez pas faire de réservations le Samedi ou le Dimanche.';
-                header('Location: reservation-form.php');
-                return;
-            }
-            // heure de fin avant heure du debut
-            elseif ($endTimeArray[0] <= $startTimeArray[0]) 
-            {
-                $_SESSION['error'] = 'L\'heure de fin de votre réservation n\'est pas valide, elle finit avant d\'avoir commencé.';
-                header('Location: reservation-form.php');
-                return;
-            }
-            // 
-            elseif ($endTimeArray[1] != '00' || $startTimeArray[1] != '00') 
-            {
-                $_SESSION['error'] = 'Vous ne pouvez utiliser que des heures.';
-                header('Location: reservation-form.php');
-                return;
-            }
-            else 
-            {
-                $timestampNow = time();
-                $dateTime = $_POST['date'] . ' ' .$_POST['startTime'] . ':00';
-                $resDateTime = strtotime($dateTime);
 
-                if ($resDateTime <= $timestampNow) 
+        // Variable heure + jour début et fin pour les conditions
+
+        $heure_debut_nombre = date_create($date_debut);
+        $heure_debut = date_format($heure_debut_nombre ,'G'); // renvoi int 15 pour ex 15h00 
+        $jour_debut = date_format($heure_debut_nombre ,'w'); // int 0 pour diamnche, 1 lundi etc...
+
+        $heure_fin_nombre = date_create($date_fin);
+        $heure_fin = date_format($heure_fin_nombre ,'G');
+        $jour_fin = date_format($heure_fin_nombre ,'w');
+
+        $interval = $heure_fin - $heure_debut ; 
+        
+        if(!empty($titre) && !empty($description) && !empty($date_debut) && !empty($date_fin)) // verif champs vide 
+        {
+
+            $connexion = new PDO('mysql:host=localhost;dbname=reservationsalles',"root","");
+            $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION) ;
+
+            $sql = $connexion->prepare("SELECT COUNT(*) FROM reservations WHERE debut = :datedebut OR fin = :datefin"); 
+            $sql->bindParam(':datedebut',$date_debut );
+            $sql->bindParam(':datefin',$date_fin );
+
+            $sql->execute(); 
+
+            $resultat = $sql->fetchColumn() ;
+
+            if($resultat == 0 && $jour_debut == $jour_fin && $interval <= 2 && $jour_debut > 0 && $jour_debut < 6 && $heure_debut >= 8 && $heure_debut <= 18 && $heure_fin >= 9 && $heure_fin <= 19 && $heure_fin > $heure_debut ) 
+            {
+                $requete = $connexion->prepare("INSERT INTO reservations(titre,description,debut,fin,id_utilisateur) VALUES (:titre,:description,:debut,:fin,:id_utilisateur)");
+                $requete->bindParam(':titre',$titre );
+                $requete->bindParam(':description',$description );
+                $requete->bindParam(':debut',$date_debut );
+                $requete->bindParam(':fin', $date_fin );
+                $requete->bindParam(':id_utilisateur',$id_utilisateur );
+    
+                $requete->execute() ; 
+    
+                $resa = '<p class="valide"> Réservation effectué </p>' ;
+                if($interval == 2)
                 {
-                    $_SESSION['error'] = 'Vous avez fait une réservation dans le passé. 
-                                        Merci de faire les corrections nécessaires.';
-                    header('Location: reservation-form.php');
-                    return;
+                    $new_date = date_create($date_debut);
+                    date_modify($new_date,"+1 hour") ;
+
+                    $date_debut = date_format($new_date,'Y-m-d H:i:s');
+                    
+                    $requete->execute() ; 
+
                 }
             }
+            elseif($jour_debut != $jour_fin)
+            {
+                $meme_jour = '<p class="error"> Veuillez selectionnez le même jour </p>';
+            }
+            elseif($interval > 2){
+                $interval_error = '<p class="error"> Vous ne pouvez pas reservé plus de 2h </p>';
+            }
+            elseif($jour_debut == 0 OR $jour_debut == 6)
+            {
+                $jour_error = '<p class="error"> Les reservations se font uniquement du lundi au vendredi </p>' ; 
+            }
+            elseif($heure_debut < 8 OR $heure_debut > 18 OR $heure_fin < 9 OR $heure_fin > 19)
+            {
+                $crenau_error = '<p class="error"> Les reservations se font entre 8h et 19h </p>' ;
+            }
+            elseif($heure_fin <= $heure_debut)
+            {
+                $heure_error = '<p class="error"> Erreur : l\'heure de fin est inférieure à l\'heure du début </p>' ; 
+            }
+            else{
+                $reser = '<p class="error"> Ce crénau horaire est déjà reservé ! </p>' ; 
+            }
+        }
+        else{
+            $champs = '<p class="error"> Veuillez remplir tous les champs </p>' ;
         }
     }
 ?>
-<!DOCTYPE html>
-<html lang="fr">
+
+
+<DOCTYPE! html>
+<html>
+
     <?php require_once('templates/head.php') ?>
-    <body class="container">
-        <?php require_once('templates/header.php') ?>
+
+    <body>
+<?php require_once('templates/header.php') ?>
+
         <main>
-            <h1>Formulaire de réservation de salle</h1>
-            <p>ici vous pouvez réserver une salle</p>
-            <?php
-                if (isset($_SESSION['error'])) 
-                {
-                    echo '<p class="error">' . $_SESSION['error'] . '</p>';
-                    unset($_SESSION['error']);
-                }
-                elseif ( isset($_SESSION['success']) ) 
-                {
-                    echo '<p class="success">' . $_SESSION['success'] . '</p>';
-                    unset($_SESSION['success']);
-                }
-                if (!isset($_SESSION['logged']) || !$_SESSION['logged']) :
-                    echo '<p class="error">Vous devez etre connecté pour pouvoir réserver</p>';
-                else :
-            ?>
+            <section id="formulaire">
+                <article class="contenu_formulaire">
+                    <form action="reservation-form.php" method="POST">
 
-            <p>
-                Vous ne pouvez réserver que 
-            </p>
-            <form method="POST">
-                <label for="title">Titre:</label>
-                <input type="text" name="title" id="title" /><br />
+                        <label for="titre"> Titre : </label>
+                        <input type="text" id="titre" name="titre">
 
-                <label for="date">date:</label>
-                <input type="date" name="date" id="date"/><br />
+                        <label for="des"> Description : </label>
+                        <textarea id="des" name="description"></textarea>
 
-                <label for="timeStart">heure de début:<br /><small>de 8:00 à 19:00</small></label>
-                <input type="time" id="timeStart" name="startTime" min="08:00" max="19:00" /><br />
+                        <label for="date_debut"> Date de début : </label>
+                        <input type="datetime-local" id="date_debut" name="date_debut">
 
-                <label for="timeEnd">heure de fin:<br /><small>de 9:00 à 20:00</small></label>    
-                <input type="time" id="timeEnd" name="endTime" min="09:00" max="20:00" /> <br />
+                        <label for="date_fin"> Date de fin : </label>
+                        <input type="datetime-local" id="date_fin" name="date_fin">
 
-                <label for="description">Desciption:</label> <br />
-                <textarea name="description" id="description" cols="33" rows="10" maxlength="65535"></textarea/><br />
+                        <?php 
+                            if(isset($meme_jour))
+                            {
+                                echo $meme_jour ;
+                            }
+                            elseif(isset($interval_error))
+                            {
+                                echo $interval_error ;
+                            }
+                            elseif(isset($jour_error))
+                            {
+                                echo $jour_error ;
+                            }
+                            elseif(isset($crenau_error))
+                            {
+                                echo $crenau_error ;
+                            }
+                            elseif(isset( $heure_error))
+                            {
+                                echo  $heure_error ;
+                            }
+                            elseif(isset($reser))
+                            {
+                                echo $reser ;
+                            }
+                            elseif(isset($champs))
+                            {
+                                echo $champs ;
+                            }
+                            elseif(isset($resa))
+                            {
+                                echo $resa ; 
+                            }
 
-                <input type="submit" name='cancel' value="annuler">
-                <input type="reset" name='reset' value="Réinitialiser">
-                <input type="submit" name='submit' value="Valider">
-            </form>
-            <?php
-                endif;
-            ?>
-        
+                        ?>
+
+                        <input type="submit" value="Envoyer" name="valider">
+
+                    </form>
+                </article>
+
+            </section>
         </main>
-        <?php require_once('templates/footer.php') ?>
-        
+<?php require_once('templates/footer.php') ?>
+
     </body>
 </html>
