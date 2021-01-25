@@ -46,81 +46,55 @@ header nav ol li a:hover
     justify-content: center;
     
 }
-.h1-accueil
-{
-    font-family: 'Redressed', cursive;
-    color: darkblue;
-    text-align: center;
-    margin-top:     20px;
-    margin-bottom:  20px;
-}
-.article-accueil
-{
-    text-align: center;
-    color: darkblue;
-    margin-top: 20px;
-    margin-bottom: 50px;
-}
-.article-accueil h3
-{
-    text-decoration:underline;
-}
-.voyager
-{
-    align-content: center;
-    background-color: white;
-    box-shadow: 0px 0px 17px 15px #a9a9a9;
-    width: 80%;
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: center;
-}
-.voyager_1
-{
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    margin-right: 20px;
-}
-.voyager_1 article
-{
-    width: 500px;
-    height: 500px;
-    padding: 20px;
 
-}
-.voyager_1 article h3
-{
-    margin-top: 20px;
-    margin-bottom: 20px;
-    color: darkblue;
-
-}
-.voyager_1 article p
-{
-    color: darkblue;
-        border-bottom: 5px solid darkblue;
-    border-right: 5px solid darkblue;
-    padding: 5%;
-
-}
-.voyager_2
-{
-    margin-left: 20px;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-}
-.image
-{
-    border-radius: 15%;
-    padding: 20px;
-    width: 500px;
-    height: 500px;
-}
 
 
 /*    FOOTER   */
+
+footer 
+{
+    border-radius: 5px;
+    width: 100%;
+    border-radius: 5px;
+    box-shadow: 0px 0px 17px 15px #a9a9a9;
+    background-color: #292c2f;
+}
+footer nav ol
+{
+    display: flex;
+    justify-content: space-around;
+}
+footer nav ol li a 
+{
+    font-size: 25px;
+    font-weight: 400;
+    display: inline-block;
+    position: relative;
+    line-height: 2.5;
+    color: white;
+    text-decoration: none;
+}
+
+footer nav ol li a:hover
+{
+    color: white;
+    text-shadow: 1px 1px 2px black, 0 0 25px #66a6d1, 0 0 5px darkblue;
+}
+
+
+
+
+
+
+.dispo{
+    color: green;
+}
+
+
+
+
+
+
 
 /*    INSCRIPTION    */
 

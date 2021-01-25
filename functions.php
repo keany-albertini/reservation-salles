@@ -25,7 +25,7 @@ function checkHoraire($jour,$heure){
         
     }
     else{
-        echo '<td> crénaux disponible </td>' ;
+        echo '<td class="dispo" > disponible </td>' ;
     }
 }
 

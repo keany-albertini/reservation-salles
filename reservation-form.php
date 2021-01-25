@@ -58,7 +58,7 @@
     
                 $requete->execute() ; 
     
-                $resa = '<p class="valide"> Réservation effectué </p>' ;
+                $resa = '<p class="success"> Réservation effectué </p>' ;
                 if($interval == 2)
                 {
                     $new_date = date_create($date_debut);

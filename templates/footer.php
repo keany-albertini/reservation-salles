@@ -1,18 +1,6 @@
-<footer class="footer-distributed">
-
-			<div class="footer-right">
-
-				<a href="#"><i class="fa fa-facebook"></i></a>
-				<a href="#"><i class="fa fa-twitter"></i></a>
-				<a href="#"><i class="fa fa-linkedin"></i></a>
-				<a href="#"><i class="fa fa-github"></i></a>
-
-			</div>
-
-			<div class="footer-left">
-
-				<p class="footer-links">
-					<ol  itemscope itemtype="http://schema.org/BreadcrumbList">
+<footer>
+	<nav>
+		<ol class="breadcrumb " itemscope itemtype="http://schema.org/BreadcrumbList">
 			<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
 				<a itemprop="item" href="index.php"><span itemprop="name">Accueil</span></a>
 				<meta itemprop="position" content="1" />
@@ -38,27 +26,30 @@
 			<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
 				 <?php 
 					if(isset($_SESSION['login']))
-						echo "<a itemprop=\"item\" href=\"reservation.php\"><span itemprop=\"name\">Réservation</span></a><meta itemprop=\"position\" content=\"3\" /></li>";
 						
+						echo "<a itemprop=\"item\" href=\"reservation-form.php\"><span itemprop=\"name\">réservation</span></a><meta itemprop=\"position\" content=\"3\" /></li>";
 				?>
             
-			
-			
-			
-			<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
-				 <?php 
-					if(isset($_SESSION['login']))
-						
-						echo "<a itemprop=\"item\" href=\"reservation-form.php\"><span itemprop=\"name\">résa</span></a><meta itemprop=\"position\" content=\"3\" /></li>";
-				?>
-            
-			
+			</li>
 			
 			
 		</ol>
-				</p>
+	</nav>
 
-				<p>Company Name &copy; 2015</p>
-			</div>
 
-		</footer>
+        <p class="footer-company-name">Laplateforme_  Keany  © 2021</p>
+
+        <div class="footer-icons">
+
+          <a href="#"><i class="fa fa-facebook"></i></a>
+          <a href="#"><i class="fa fa-twitter"></i></a>
+          <a href="#"><i class="fa fa-linkedin"></i></a>
+          <a href="#"><i class="fa fa-github"></i></a>
+
+        </div>
+
+
+
+   
+
+    </footer>
