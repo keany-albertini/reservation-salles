@@ -46,7 +46,41 @@ header nav ol li a:hover
     justify-content: center;
     
 }
+.article_1{
+    margin-top: 100px;
+    margin-bottom: 100px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: 50%;
+    box-shadow: 0px 0px 17px 15px #a9a9a9;
+    color: #292c2f;
+    margin-left: 25%;
 
+}
+.accueil_middle{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+     background-color: white;
+}
+
+
+.accueil_middle p{
+    width: 500px;
+    border-left: 2px black solid;
+    color: black;
+    padding: 5px;
+    justify-content: center;
+    text-align: center;
+}
+.accueil_middle p button{
+    margin-top: 20px;
+
+}
+..accueil_middle p button a{
+    text-decoration: none;
+}
 
 
 /*    FOOTER   */
